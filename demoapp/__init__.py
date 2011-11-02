@@ -15,21 +15,16 @@ def main(global_config, **settings):
     config.registry['storage'] = configure_from_settings(
         'storage', settings['config'].get_map('storage'))
 
-    # adds authorization
-    # option 1: auth via repoze.who
-    #config.include("pyramid_whoauth")
-    # option 2: auth based on IP address
-    #config.include("pyramid_ipauth")
-    # option 3: multiple stacked auth modules
+    # Adds authorization.
     config.include("pyramid_multiauth")
 
-    # adds cornice
+    # Adds cornice.
     config.include("cornice")
 
-    # adds Mozilla default views
+    # Adds Mozilla default views.
     config.include("mozsvc")
 
-    # adds application-specific views
+    # Adds application-specific views.
     config.add_route("get_address", "/alias/{alias}")
     config.scan("demoapp.views")
 
