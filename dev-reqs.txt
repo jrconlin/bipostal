@@ -1,19 +1,9 @@
-cef == 0.2
-Mako == 0.5
-MarkupSafe == 0.15
-Paste == 1.7.5.1
-PasteDeploy == 1.5
-PasteScript == 1.7.4.2
-Pygments == 1.4
-WebOb == 1.1.1
-pyramid == 1.2.1
-pyramid_debugtoolbar == 0.9.4
-repoze.lru == 0.4
-venusian == 1.0a2
-zope.component == 3.11
-zope.deprecation == 3.5
-zope.event == 3.5.1
-zope.interface == 3.8
-pyramid_who == 0.2
-repoze.who == 2.0
+MoPyTools
+nose
+WebTest
 redis == 2.4.10
+-e git://github.com/mozilla-services/mozservices.git#egg=mozsvc
+-e git://github.com/mozilla-services/pyramid_whoauth.git#egg=pyramid_whoauth
+-e git://github.com/mozilla-services/cornice.git#egg=cornice
+-e git://github.com/mozilla-services/pyramid_multiauth.git#egg=pyramid_multiauth
+-e git://github.com/mozilla-services/repoze.who.plugins.browserid.git#egg=repoze.who.plugins.browserid
