@@ -16,3 +16,32 @@ Run the Server
 ::
 
     paster serve etc/demoapp-dev.ini
+
+
+The API
+-------
+
+::
+
+    GET /alias/
+
+    >>> 200 OK {"email": <email>, "aliases": [<alias>, <alias>, ...]}
+
+    Requires browserid auth.
+
+::
+
+    POST /alias/
+
+    >>> 200 OK {"email": <email>, "alias": <alias>}
+
+    Requires browserid auth.
+
+
+::
+
+    GET /alias/<alias>
+
+    >>> 200 OK {"email": <email>}
+
+    No auth required.

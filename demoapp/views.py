@@ -1,51 +1,38 @@
-from collections import defaultdict
+import uuid
 
-from pyramid.exceptions import Forbidden
-from pyramid.security import authenticated_userid, effective_principals
+from pyramid.security import authenticated_userid
 from pyramid.view import view_config
 
 from cornice import Service
 
-
-info_desc = """\
-This service is useful to get and set data for a user.
-"""
+aliases = Service(name='aliases', path='/alias/',
+                  description='Manage the email <=> alias store.')
 
 
-user_info = Service(name='users', path='/{username}/info',
-                    description=info_desc)
-
-_USERS = defaultdict(dict)
-
-
-@user_info.get()
-def get_info(request):
-    """Returns the public information about a **user**.
-
-    If the user does not exists, returns an empty dataset.
-    """
-    username = request.matchdict['username']
-    return _USERS[username]
+def new_alias():
+    # TODO: get the domain from the config.
+    return '%s@%s' % (uuid.uuid4().hex, 'browserid.org')
 
 
-@user_info.post()
-def set_info(request):
-    """Set the public information for a **user**.
-
-    You have to be that user, and *authenticated*.
-
-    Returns *True* or *False*.
-    """
-    username = authenticated_userid(request)
-    if request.matchdict["username"] != username:
-        raise Forbidden()
-    _USERS[username] = request.json_body
-    return {'success': True}
+@view_config(route_name='get_address', renderer='simplejson')
+def get_address(request):
+    """Get the real address for a given alias."""
+    db = request.registry['storage']
+    email = db.resolve_alias(request.matchdict['alias'])
+    return {'email': email}
 
 
-@view_config(route_name="whoami", permission="authenticated", renderer="json")
-def whoami(request):
-    """View returning the authenticated user's credentials."""
-    username = authenticated_userid(request)
-    principals = effective_principals(request)
-    return {"username": username, "principals": principals}
+@aliases.get(permission='authenticated')
+def list_aliases(request):
+    db = request.registry['storage']
+    email = authenticated_userid(request)
+    aliases = db.get_aliases(email) or []
+    return {'email': email, 'aliases': aliases}
+
+
+@aliases.post(permission='authenticated')
+def add_alias(request):
+    db = request.registry['storage']
+    email = authenticated_userid(request)
+    alias = db.add_alias(email, new_alias())
+    return {'email': email, 'alias': alias}

@@ -30,7 +30,7 @@ def main(global_config, **settings):
     config.include("mozsvc")
 
     # adds application-specific views
-    config.add_route("whoami", "/whoami")
+    config.add_route("get_address", "/alias/{alias}")
     config.scan("demoapp.views")
 
     return config.make_wsgi_app()
