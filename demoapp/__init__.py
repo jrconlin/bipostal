@@ -3,13 +3,17 @@ from pyramid.config import Configurator
 from mozsvc.config import load_into_settings
 
 from demoapp.resources import Root
+from demoapp.storage import configure_from_settings
 
 
 def main(global_config, **settings):
     config_file = global_config['__file__']
-    config_ = load_into_settings(config_file, settings)
+    load_into_settings(config_file, settings)
 
     config = Configurator(root_factory=Root, settings=settings)
+
+    config.registry['storage'] = configure_from_settings(
+        'storage', settings['config'].get_map('storage'))
 
     # adds authorization
     # option 1: auth via repoze.who
