@@ -27,4 +27,7 @@ def main(global_config, **settings):
     # Adds application-specific views.
     config.scan("demoapp.views")
 
+    config.add_static_view('/', 'demoapp:backbone/',
+                           permission='authenticated')
+
     return config.make_wsgi_app()
