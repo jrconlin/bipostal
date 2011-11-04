@@ -18,3 +18,7 @@ class Storage(object):
 
     def get_aliases(self, email):
         return self.redis.lrange(email, 0, -1)
+
+    def delete_alias(self, email, alias):
+        self.redis.delete(alias)
+        self.redis.lrem(email, alias)

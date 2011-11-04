@@ -8,18 +8,13 @@ from cornice import Service
 aliases = Service(name='aliases', path='/alias/',
                   description='Manage the email <=> alias store.')
 
+alias_detail = Service(name='alias-detail', path='/alias/{alias}',
+                       description='Manage a single alias.')
+
 
 def new_alias():
     # TODO: get the domain from the config.
     return '%s@%s' % (uuid.uuid4().hex, 'browserid.org')
-
-
-@view_config(route_name='get_address', renderer='simplejson')
-def get_address(request):
-    """Get the real address for a given alias."""
-    db = request.registry['storage']
-    email = db.resolve_alias(request.matchdict['alias'])
-    return {'email': email}
 
 
 @aliases.get(permission='authenticated')
@@ -35,4 +30,23 @@ def add_alias(request):
     db = request.registry['storage']
     email = authenticated_userid(request)
     alias = db.add_alias(email, new_alias())
+    return {'email': email, 'alias': alias}
+
+
+@alias_detail.get()
+def get_alias(request):
+    """Get the real address for a given alias."""
+    db = request.registry['storage']
+    alias = request.matchdict['alias']
+    email = db.resolve_alias(alias)
+    return {'email': email, 'alias': alias}
+
+
+@alias_detail.delete(permission='authenticated')
+def delete_alias(request):
+    """Delete an alias."""
+    email = authenticated_userid(request)
+    db = request.registry['storage']
+    alias = request.matchdict['alias']
+    db.delete_alias(email, alias)
     return {'email': email, 'alias': alias}
