@@ -16,7 +16,7 @@ class ViewTest(unittest2.TestCase):
         self.config.testing_securitypolicy(userid=self.email, permissive=True)
         self.request = testing.DummyRequest()
         self.request.registry['storage'] = mem.Storage()
-        self.request.registry['email_domain'] = 'browserid.org'
+        self.request.registry.settings['email_domain'] = 'browserid.org'
 
     def tearDown(self):
         testing.tearDown()

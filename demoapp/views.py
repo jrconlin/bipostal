@@ -31,7 +31,7 @@ def list_aliases(request):
 @aliases.post(permission='authenticated')
 def add_alias(request):
     db = request.registry['storage']
-    domain = request.registry['email_domain']
+    domain = request.registry.settings['email_domain']
     email = authenticated_userid(request)
     alias = db.add_alias(email, new_alias(domain=domain))
     return {'email': email, 'alias': alias}
