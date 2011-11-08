@@ -1,3 +1,4 @@
+import logging
 import os
 import string
 
@@ -11,6 +12,9 @@ aliases = Service(name='aliases', path='/alias/',
 
 alias_detail = Service(name='alias-detail', path='/alias/{alias}',
                        description='Manage a single alias.')
+
+
+logger = logging.getLogger(__file__)
 
 
 def new_alias(length=64, domain='browserid.org'):
@@ -34,6 +38,7 @@ def add_alias(request):
     domain = request.registry.settings['email_domain']
     email = authenticated_userid(request)
     alias = db.add_alias(email, new_alias(domain=domain))
+    logger.info('New alias for %s: %s.', email, alias)
     return {'email': email, 'alias': alias}
 
 
