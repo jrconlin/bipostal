@@ -1,4 +1,5 @@
-import uuid
+import os
+import string
 
 from pyramid.security import authenticated_userid
 from pyramid.view import view_config
@@ -12,9 +13,11 @@ alias_detail = Service(name='alias-detail', path='/alias/{alias}',
                        description='Manage a single alias.')
 
 
-def new_alias():
-    # TODO: get the domain from the config.
-    return '%s@%s' % (uuid.uuid4().hex, 'browserid.org')
+def new_alias(length=64, domain='browserid.org'):
+    chars = string.digits + string.letters
+    base = len(chars)
+    token = ''.join(chars[ord(x) % base] for x in os.urandom(length))
+    return '%s@%s' % (token, domain)
 
 
 @aliases.get(permission='authenticated')
@@ -28,8 +31,9 @@ def list_aliases(request):
 @aliases.post(permission='authenticated')
 def add_alias(request):
     db = request.registry['storage']
+    domain = request.registry['email_domain']
     email = authenticated_userid(request)
-    alias = db.add_alias(email, new_alias())
+    alias = db.add_alias(email, new_alias(domain=domain))
     return {'email': email, 'alias': alias}
 
 

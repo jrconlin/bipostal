@@ -1,5 +1,6 @@
 import unittest2
 
+import mock
 from pyramid import testing
 from nose.tools import eq_
 
@@ -15,6 +16,7 @@ class ViewTest(unittest2.TestCase):
         self.config.testing_securitypolicy(userid=self.email, permissive=True)
         self.request = testing.DummyRequest()
         self.request.registry['storage'] = mem.Storage()
+        self.request.registry['email_domain'] = 'browserid.org'
 
     def tearDown(self):
         testing.tearDown()
@@ -45,3 +47,10 @@ class ViewTest(unittest2.TestCase):
         self.request.matchdict = None
         eq_(views.list_aliases(self.request),
             {'email': self.email, 'aliases': []})
+
+
+@mock.patch('demoapp.views.os.urandom')
+def test_new_alias(urandom_mock):
+    urandom_mock.return_value = ''.join(map(chr, [0, 1, 61, 62, 63, 64]))
+    eq_(views.new_alias(), '01Z012@browserid.org')
+    eq_(views.new_alias(domain='woo.com'), '01Z012@woo.com')

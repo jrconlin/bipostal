@@ -12,6 +12,7 @@ def main(global_config, **settings):
 
     config = Configurator(root_factory=Root, settings=settings)
 
+    config.registry['email_domain'] = settings['email_domain']
     config.registry['storage'] = configure_from_settings(
         'storage', settings['config'].get_map('storage'))
 
