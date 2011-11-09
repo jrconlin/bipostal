@@ -1,9 +1,12 @@
+import os
 import unittest2
 
 import mock
+import webtest
 from pyramid import testing
 from nose.tools import eq_
 
+import demoapp
 from demoapp.storage import mem
 from demoapp import views
 
@@ -54,3 +57,16 @@ def test_new_alias(urandom_mock):
     urandom_mock.return_value = ''.join(map(chr, [0, 1, 61, 62, 63, 64]))
     eq_(views.new_alias(), '01Z012@browserid.org')
     eq_(views.new_alias(domain='woo.com'), '01Z012@woo.com')
+
+
+class AppTest(unittest2.TestCase):
+
+    def setUp(self):
+        # Grab the development ini file.
+        p = os.path
+        ini = p.join(p.dirname(__file__), '../../etc/demoapp-dev.ini')
+        app = demoapp.main({'__file__': p.abspath(ini)})
+        self.testapp = webtest.TestApp(app)
+
+    def test_root(self):
+        self.testapp.get('/', status=403)
