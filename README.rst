@@ -8,14 +8,14 @@ Getting Started
 
 3. Start the server::
 
-    paster serve etc/demoapp-dev.ini
+    paster serve etc/bipostal-dev.ini
 
 
 Run the Server
 --------------
 ::
 
-    paster serve etc/demoapp-dev.ini
+    paster serve etc/bipostal-dev.ini
 
 
 The API

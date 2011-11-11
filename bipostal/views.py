@@ -38,7 +38,7 @@ def add_alias(request):
     domain = request.registry.settings['email_domain']
     email = authenticated_userid(request)
     alias = db.add_alias(email, new_alias(domain=domain))
-    logger.info('New alias for %s: %s.', email, alias)
+    logger.info('New alias for %s.', email)
     return {'email': email, 'alias': alias}
 
 
@@ -58,4 +58,5 @@ def delete_alias(request):
     db = request.registry['storage']
     alias = request.matchdict['alias']
     db.delete_alias(email, alias)
+    logger.info('Deleting alias for %s.', email)
     return {'email': email, 'alias': alias}

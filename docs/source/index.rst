@@ -1,8 +1,8 @@
-Welcome to demoapp's documentation!
+Welcome to bipostal's documentation!
 ===================================
 
 .. services::
-   :package: demoapp
+   :package: bipostal
 
-    These are the services implemented by demoapp.
+    These are the services implemented by bipostal.
 

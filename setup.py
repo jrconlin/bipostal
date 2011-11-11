@@ -13,9 +13,9 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
 requires = ['cornice', 'pyramid_whoauth', 'mozsvc']
 
 
-setup(name='demoapp',
+setup(name='bipostal',
       version='0.2',
-      description='demoapp',
+      description='bipostal',
       long_description=README + '\n\n' +  CHANGES,
       classifiers=[
         "Programming Language :: Python",
@@ -32,10 +32,10 @@ setup(name='demoapp',
       zip_safe=False,
       install_requires=requires,
       tests_require=requires,
-      test_suite="demoapp",
+      test_suite="bipostal",
       entry_points = """\
       [paste.app_factory]
-      main = demoapp:main
+      main = bipostal:main
       """,
       paster_plugins=['pyramid'],
       )

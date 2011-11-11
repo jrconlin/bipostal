@@ -48,7 +48,7 @@ os.environ['PYTHON_EGG_CACHE'] = '/tmp/python-eggs'
 
 # the ini file is grabbed at its production place
 # unless force via an environ variable
-ini_file = os.path.join('/etc', 'demoapp', 'production.ini')
+ini_file = os.path.join('/etc', 'bipostal', 'production.ini')
 ini_file = os.path.abspath(os.environ.get('INI_FILE', ini_file))
 
 # running the app using Paste

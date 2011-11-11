@@ -2,8 +2,8 @@ from pyramid.config import Configurator
 
 from mozsvc.config import load_into_settings
 
-from demoapp.resources import Root
-from demoapp.storage import configure_from_settings
+from bipostal.resources import Root
+from bipostal.storage import configure_from_settings
 
 
 def main(global_config, **settings):
@@ -25,9 +25,9 @@ def main(global_config, **settings):
     config.include("mozsvc")
 
     # Adds application-specific views.
-    config.scan("demoapp.views")
+    config.scan("bipostal.views")
 
-    config.add_static_view('/', 'demoapp:backbone/',
+    config.add_static_view('/', 'bipostal:backbone/',
                            permission='authenticated')
 
     return config.make_wsgi_app()
