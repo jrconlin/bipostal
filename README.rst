@@ -26,6 +26,8 @@ The API
     GET /alias/
     >>> 200 OK {"email": <email>, "aliases": [<alias>, <alias>, ...]}
 
+    Retrieve all the aliases for the current user.
+
     Requires browserid auth.
 
 ::
@@ -33,12 +35,20 @@ The API
     POST /alias/
     >>> 200 OK {"email": <email>, "alias": <alias>}
 
+    Create a new alias for the current user.
+
+    Optionally, an alias can be requested in the POST body:
+
+        {"alias": <alias>}
+
     Requires browserid auth.
 
 ::
 
     GET /alias/<alias>
     >>> 200 OK {"email": <email>}
+
+    Get the real email address for the given alias.
 
     No auth required.
 

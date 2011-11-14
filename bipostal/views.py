@@ -1,9 +1,10 @@
 import logging
 import os
+import re
 import string
 
+from pyramid import httpexceptions as http
 from pyramid.security import authenticated_userid
-from pyramid.view import view_config
 
 from cornice import Service
 
@@ -15,6 +16,9 @@ alias_detail = Service(name='alias-detail', path='/alias/{alias}',
 
 
 logger = logging.getLogger(__file__)
+
+# Not the best; just make sure it looks like x@y.z.
+EMAIL_RE = '[^@]+@[^.]+.\w+'
 
 
 def new_alias(length=64, domain='browserid.org'):
@@ -35,9 +39,19 @@ def list_aliases(request):
 @aliases.post(permission='authenticated')
 def add_alias(request):
     db = request.registry['storage']
-    domain = request.registry.settings['email_domain']
     email = authenticated_userid(request)
-    alias = db.add_alias(email, new_alias(domain=domain))
+
+    if request.body:
+        try:
+            alias = request.json_body['alias']
+        except Exception:
+            raise http.HTTPBadRequest()
+    else:
+        alias = new_alias(domain=request.registry.settings['email_domain'])
+    if not re.match(EMAIL_RE, alias) or db.resolve_alias(alias):
+        raise http.HTTPBadRequest()
+
+    db.add_alias(email, alias)
     logger.info('New alias for %s.', email)
     return {'email': email, 'alias': alias}
 

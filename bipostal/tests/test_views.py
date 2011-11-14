@@ -1,14 +1,28 @@
+import json
 import os
 import unittest2
 
 import mock
 import webtest
 from pyramid import testing
+from pyramid import httpexceptions as http
 from nose.tools import eq_
 
 import bipostal
 from bipostal.storage import mem
 from bipostal import views
+
+
+class JSONRequest(testing.DummyRequest):
+
+    def __init__(self, **kw):
+        super(JSONRequest, self).__init__(**kw)
+        if 'post' in kw:
+            self.body = kw['post']
+
+    @property
+    def json_body(self):
+        return json.loads(self.body, encoding=self.charset)
 
 
 class ViewTest(unittest2.TestCase):
@@ -28,6 +42,35 @@ class ViewTest(unittest2.TestCase):
         response = views.add_alias(self.request)
         eq_(set(response.keys()), set(['email', 'alias']))
         eq_(response['email'], self.email)
+
+        eq_(views.list_aliases(self.request),
+            {'email': self.email, 'aliases': [response['alias']]})
+
+    def test_add_alias_from_body(self):
+        request = JSONRequest(post=json.dumps({'alias': 'x@y.com'}))
+        response = views.add_alias(request)
+        eq_(response, {'email': self.email, 'alias': 'x@y.com'})
+
+        eq_(views.list_aliases(self.request),
+            {'email': self.email, 'aliases': ['x@y.com']})
+
+    def test_add_alias_from_body_dupe(self):
+        request = JSONRequest(post=json.dumps({'alias': 'x@y.com'}))
+        views.add_alias(request)
+
+        # Calling it again will fail the dupe check.
+        with self.assertRaises(http.HTTPBadRequest):
+            views.add_alias(request)
+
+    def test_add_alias_from_body_bad_json(self):
+        request = JSONRequest(post='not json')
+        with self.assertRaises(http.HTTPBadRequest):
+            views.add_alias(request)
+
+    def test_add_alias_from_body_bad_email(self):
+        request = JSONRequest(post=json.dumps({'alias': 'x@y'}))
+        with self.assertRaises(http.HTTPBadRequest):
+            views.add_alias(request)
 
     def test_get_alias(self):
         alias = views.add_alias(self.request)['alias']
