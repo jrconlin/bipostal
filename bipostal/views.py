@@ -74,3 +74,18 @@ def delete_alias(request):
     rv = db.delete_alias(email, alias)
     logger.info('Deleting alias for %s.', email)
     return rv
+
+
+@alias_detail.post(permission='authenticated')
+def change_alias(request):
+    """Make a change to an existing alias."""
+    try:
+        active = request.json_body['active']
+    except Exception:
+        raise http.HTTPBadRequest()
+
+    email = authenticated_userid(request)
+    db = request.registry['storage']
+    alias = request.matchdict['alias']
+    rv = db.add_alias(email, alias, active)
+    return rv

@@ -97,6 +97,19 @@ class ViewTest(unittest2.TestCase):
         eq_(views.list_aliases(self.request),
             {'email': self.email, 'aliases': []})
 
+    def test_change_alias(self):
+        alias = views.add_alias(self.request)['alias']
+
+        request = JSONRequest(post=json.dumps({'active': False}))
+        request.matchdict = {'alias': alias}
+        response = views.change_alias(request)
+        eq_(response, {'email': self.email, 'alias': alias, 'active': False})
+
+        request = JSONRequest(post=json.dumps({'active': True}))
+        request.matchdict = {'alias': alias}
+        response = views.change_alias(request)
+        eq_(response, {'email': self.email, 'alias': alias, 'active': True})
+
 
 @mock.patch('bipostal.views.os.urandom')
 def test_new_alias(urandom_mock):

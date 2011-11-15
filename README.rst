@@ -57,4 +57,17 @@ The API
     DELETE /alias/<alias>
     >>> 200 OK
 
+    Forget about the given alias.
+
+    Requires browserid auth.
+
+::
+
+    PUT /alias/<alias>
+    >>> 200 OK
+
+    Modify the given alias by passing these properties in the body::
+
+        {"active": true|false}
+
     Requires browserid auth.
