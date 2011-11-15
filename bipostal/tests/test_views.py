@@ -40,19 +40,22 @@ class ViewTest(unittest2.TestCase):
 
     def test_add_alias(self):
         response = views.add_alias(self.request)
-        eq_(set(response.keys()), set(['email', 'alias']))
+        eq_(set(response.keys()), set(['email', 'alias', 'active']))
         eq_(response['email'], self.email)
 
         eq_(views.list_aliases(self.request),
-            {'email': self.email, 'aliases': [response['alias']]})
+            {'email': self.email, 'aliases': [response]})
 
     def test_add_alias_from_body(self):
         request = JSONRequest(post=json.dumps({'alias': 'x@y.com'}))
         response = views.add_alias(request)
-        eq_(response, {'email': self.email, 'alias': 'x@y.com'})
+        eq_(response, {'email': self.email, 'alias': 'x@y.com',
+                       'active': True})
 
         eq_(views.list_aliases(self.request),
-            {'email': self.email, 'aliases': ['x@y.com']})
+            {'email': self.email,
+             'aliases': [{'email': self.email, 'alias': 'x@y.com',
+                          'active': True}]})
 
     def test_add_alias_from_body_dupe(self):
         request = JSONRequest(post=json.dumps({'alias': 'x@y.com'}))
@@ -76,11 +79,11 @@ class ViewTest(unittest2.TestCase):
         alias = views.add_alias(self.request)['alias']
         self.request.matchdict = {'alias': alias}
         response = views.get_alias(self.request)
-        eq_(response, {'email': self.email, 'alias': alias})
+        eq_(response, {'email': self.email, 'alias': alias, 'active': True})
 
     def test_list_aliases(self):
-        alias1 = views.add_alias(self.request)['alias']
-        alias2 = views.add_alias(self.request)['alias']
+        alias1 = views.add_alias(self.request)
+        alias2 = views.add_alias(self.request)
         response = views.list_aliases(self.request)
         eq_(response, {'email': self.email, 'aliases': [alias1, alias2]})
 
@@ -88,7 +91,7 @@ class ViewTest(unittest2.TestCase):
         alias = views.add_alias(self.request)['alias']
         self.request.matchdict = {'alias': alias}
         response = views.delete_alias(self.request)
-        eq_(response, {'email': self.email, 'alias': alias})
+        eq_(response, {'email': self.email, 'alias': alias, 'active': False})
 
         self.request.matchdict = None
         eq_(views.list_aliases(self.request),

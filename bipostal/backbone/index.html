@@ -59,9 +59,7 @@
 
         parse: function(response) {
           this.email = response.email;
-          return _.map(response.aliases, function(alias) {
-            return {email: response.email, alias: alias};
-          });
+          return response.aliases;
         }
       });
 
